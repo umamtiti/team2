@@ -1,0 +1,2 @@
+set(sdk_sagittarius_arm_MESSAGE_FILES "/home/ay/team2/src/sagittarius_arm_ros/sdk_sagittarius_arm/msg/ArmRadControl.msg;/home/ay/team2/src/sagittarius_arm_ros/sdk_sagittarius_arm/msg/SingleRadControl.msg")
+set(sdk_sagittarius_arm_SERVICE_FILES "/home/ay/team2/src/sagittarius_arm_ros/sdk_sagittarius_arm/srv/ArmInfo.srv;/home/ay/team2/src/sagittarius_arm_ros/sdk_sagittarius_arm/srv/ServoRtInfo.srv")

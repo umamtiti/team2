@@ -1,0 +1,32 @@
+<launch>
+  <!-- 机械臂 -->
+  <arg name="robot_name" default="sgr532"/>
+  <arg name="robot_model" default="$(arg robot_name)"/>
+  <include file="$(find sagittarius_moveit)/launch/demo_true.launch" />
+  <node pkg="sagittarius_object_color_detector" type="sgr_ctrl.py" name="sgr_ctrl_node" output="screen" ns="$(arg robot_name)"/>
+
+  <!-- 摄像头 -->
+  <arg name="video_dev" default="/dev/usb_cam" />
+  <arg name="image_width" default="640" />
+  <arg name="image_height" default="480" />
+  <arg name="pixel_format" default="yuyv" />
+  <arg name="framerate" default="30" />
+  <arg name="camera_frame_id" default="usb_cam" />
+  <arg name="io_method" default="mmap" />
+  <include file="$(find sagittarius_object_color_detector)/launch/usb_cam.launch">
+    <arg name="video_dev"	value="$(arg video_dev)"/>
+    <arg name="image_width" value="$(arg image_width)"/>
+    <arg name="image_height" value="$(arg image_height)"/>
+    <arg name="pixel_format" value="$(arg pixel_format)"/>
+    <arg name="framerate" value="$(arg framerate)"/>
+    <arg name="camera_frame_id" value="$(arg camera_frame_id)"/>
+    <arg name="io_method" value="$(arg io_method)"/>
+  </include>
+
+  <!-- 抓取例程 -->
+  <arg name="vision_config" default="$(find sagittarius_object_color_detector)/config/vision_config.yaml"/>
+  <node pkg="sagittarius_object_color_detector" type="color_classification.py" name="color_classification_node" output="screen">
+    <param name ="vision_config" value = "$(arg vision_config)"/>
+  </node>
+
+</launch>

@@ -1,0 +1,8 @@
+prefix=/home/ay/team2/devel
+
+Name: sagittarius_openclaw_bridge
+Description: Description of sagittarius_openclaw_bridge
+Version: 0.0.1
+Cflags: -I/home/ay/team2/devel/include
+Libs: -L${prefix}/lib 
+Requires: actionlib cv_bridge message_runtime rospy sensor_msgs sagittarius_object_color_detector

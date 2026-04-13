@@ -1,0 +1,33 @@
+LinearRegression:
+  b1: 0.324208728180198
+  b2: 0.08160360590715192
+  k1: -0.00025292681724675546
+  k2: -0.0002870839257947297
+blue:
+  hmax: 267
+  hmin: 168
+  smax: 255
+  smin: 41
+  vmax: 255
+  vmin: 0
+customize:
+  hmax: 360
+  hmin: 0
+  smax: 255
+  smin: 0
+  vmax: 255
+  vmin: 0
+green:
+  hmax: 138
+  hmin: 69
+  smax: 255
+  smin: 90
+  vmax: 255
+  vmin: 0
+red:
+  hmax: 21
+  hmin: 360
+  smax: 255
+  smin: 32
+  vmax: 255
+  vmin: 0
