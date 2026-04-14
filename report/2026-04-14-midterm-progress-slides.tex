@@ -1,0 +1,147 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\title{Midterm Progress Presentation}
+\subtitle{OpenClaw-Driven Sagittarius Arm System}
+\author{Your Team Name}
+\date{April 14, 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Motivation}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Why this route?}
+        \begin{itemize}
+          \item Recent 2025--2026 work suggests that purely open-loop LLM control is fragile for real robots, especially in long-horizon and dynamic tasks.
+          \item Agentic robotics papers emphasize structured skills, closed-loop feedback, and reflection as practical ways to improve reliability.
+          \item For a small team, OpenClaw + Sagittarius gives us a realistic path from natural language to grounded manipulation without training a large robot policy from scratch.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Why is it useful?}
+        \begin{itemize}
+          \item Lower data and training cost than an end-to-end VLA route
+          \item Easier grounding, debugging, safety control, and failure recovery
+          \item A reusable skill interface that can still support future VLA-style integration
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.5em}
+
+  \begin{block}{Research Motivation}
+    Inspired by recent work on agentic robotics and embodied reasoning, we treat the robot as a system of reusable skills controlled by an AI agent, rather than relying only on manual scripts or a fully end-to-end policy.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Goal}
+  \begin{block}{Project Goal}
+    Build a first-stage embodied agent system in which OpenClaw converts natural-language tasks into reusable robotic skills on the Sagittarius arm.
+  \end{block}
+
+  \vspace{0.5em}
+
+  \begin{itemize}
+    \item Provide a unified task interface for search, detection, pick, place, and sorting.
+    \item Keep the execution grounded through perception and feedback-aware robot control.
+    \item Show that modular agent-driven robotics is a practical and explainable route for real-world task execution.
+    \item Establish an extensible system foundation for future long-horizon behaviors and possible VLA integration.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Methodology}
+  \begin{block}{Closed-Loop Task Execution Pipeline}
+    \centering
+    Natural-language task $\rightarrow$ Agent reasoning and skill selection $\rightarrow$ Unified robotic skill call $\rightarrow$ Perception-guided motion execution $\rightarrow$ Feedback to the agent
+  \end{block}
+
+  \vspace{0.5em}
+
+  \begin{itemize}
+    \item OpenClaw interprets user intent and selects a high-level robot skill.
+    \item The skill interface constrains the action space to reusable operations such as search, detect, pick, place, and sort.
+    \item The execution layer grounds each skill through visual perception, target localization, motion planning, and arm control.
+    \item Returned execution feedback supports safer, more interpretable, and more extensible agent behavior.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Why This Route Before End-to-End VLA?}
+  \begin{itemize}
+    \item Compared with an end-to-end VLA route, our current framework requires much less task-specific data and training cost.
+    \item The system is easier to interpret and debug because perception, decision, and execution are separated into clear layers.
+    \item It is more practical for a small team and limited hardware setup, since we can reuse mature robotics modules instead of training a large policy from scratch.
+    \item Safety and evaluation are also easier, because the agent calls constrained skills rather than directly generating all low-level actions.
+  \end{itemize}
+
+  \vspace{0.5em}
+
+  \begin{block}{Our Position}
+    This is not an alternative to VLA in principle. It is a practical intermediate route that builds the infrastructure, interfaces, and task abstractions that can later support VLA-style methods as well.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Progress Achieved}
+  \begin{itemize}
+    \item We have encapsulated the core robotic arm capabilities into reusable commands instead of relying on scattered demo scripts.
+    \item We have established a complete control path from OpenClaw to the Sagittarius arm.
+    \item We have implemented a set of agent-friendly commands, including:
+    \begin{itemize}
+      \item status, search, detect\_color
+      \item pick\_once, pick\_any, pick\_and\_place
+      \item classify\_once\_fixed, sort\_all\_fixed, classify\_once\_map
+    \end{itemize}
+    \item We have also created an OpenClaw skill so the agent can call these capabilities in a consistent way.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What We Can Demonstrate Now}
+  \begin{itemize}
+    \item System readiness check before task execution
+    \item Observation pose and color-based target detection
+    \item Single-object grasping for a specified color
+    \item Closed-loop pick-and-place for a visible target
+    \item Repeated sorting of visible blocks with fixed placement rules
+  \end{itemize}
+
+  \vspace{0.5em}
+
+  \begin{block}{Current Value}
+    The system has moved from low-level arm control toward task-level robotic capabilities that are suitable for AI agent invocation.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Why This Matters}
+  \begin{itemize}
+    \item The project is no longer only about moving a robotic arm; it is about giving an AI agent a structured way to use robotic capabilities.
+    \item The abstraction level is higher: the agent decides what to do, while the robotic stack handles how to execute it.
+    \item This combination is useful for research on embodied agents, human-robot interaction, and task-level automation.
+    \item The current architecture is also a practical foundation for future work in remote invocation, multi-step task execution, and more autonomous decision-making.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Next Steps}
+  \begin{itemize}
+    \item Improve the robustness of the control pipeline and failure recovery logic.
+    \item Extend the interface for remote invocation, such as HTTP or curl-based control.
+    \item Strengthen multi-step agent behavior beyond single-command execution.
+    \item Prepare more complete demonstrations that better highlight AI-agent advantages.
+  \end{itemize}
+
+  \vspace{0.5em}
+
+  \begin{block}{Takeaway}
+    At the midterm stage, our main achievement is not only making the arm move, but organizing the robotic capabilities into an interface that an AI agent can meaningfully use.
+  \end{block}
+\end{frame}
+
+\end{document}

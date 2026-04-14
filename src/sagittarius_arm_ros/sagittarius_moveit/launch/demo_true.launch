@@ -1,6 +1,7 @@
 <launch>
   <arg name="robot_name"                    default="sgr532"/>
   <arg name="robot_model"                   default="$(arg robot_name)"/>
+  <arg name="serialname"                    default="/dev/sagittarius"/>
   <arg name="use_default_rviz"              default="false"/>
   <arg name="external_urdf_loc"             default=""/>
   <arg name="use_world_frame"               default="true"/>
@@ -49,6 +50,7 @@
   <include file="$(find sdk_sagittarius_arm)/launch/sdk_sagittarius_arm.launch">
     <arg name="robot_name"                       value="$(arg robot_name)"/>
     <arg name="robot_model"                      value="$(arg robot_model)"/>
+    <arg name="serialname"                       value="$(arg serialname)"/>
   </include>
 
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->

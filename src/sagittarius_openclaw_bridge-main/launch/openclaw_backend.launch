@@ -1,6 +1,7 @@
 <launch>
   <arg name="robot_name" default="sgr532"/>
   <arg name="robot_model" default="$(arg robot_name)"/>
+  <arg name="serialname" default="/dev/sagittarius"/>
   <arg name="video_dev" default="/dev/usb_cam"/>
   <arg name="image_width" default="640"/>
   <arg name="image_height" default="480"/>
@@ -18,6 +19,7 @@
   <include file="$(find sagittarius_moveit)/launch/demo_true.launch">
     <arg name="robot_name" value="$(arg robot_name)"/>
     <arg name="robot_model" value="$(arg robot_model)"/>
+    <arg name="serialname" value="$(arg serialname)"/>
     <arg name="use_rviz" value="$(arg use_rviz)"/>
     <arg name="use_default_rviz" value="false"/>
   </include>
