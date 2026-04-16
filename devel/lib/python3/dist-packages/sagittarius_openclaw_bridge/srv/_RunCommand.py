@@ -217,7 +217,7 @@ import struct
 
 
 class RunCommandResponse(genpy.Message):
-  _md5sum = "5cb39e6c96588ccbabca928ecc0edafb"
+  _md5sum = "845e95e1ecaca59e1250bd15e5128521"
   _type = "sagittarius_openclaw_bridge/RunCommandResponse"
   _has_header = False  # flag to mark the presence of a Header object
   _full_text = """bool success
@@ -227,10 +227,15 @@ string detected_color
 float64 target_x
 float64 target_y
 float64 target_z
+int32 detected_count
+string[] detected_colors
+float64[] target_xs
+float64[] target_ys
+float64[] target_zs
 
 """
-  __slots__ = ['success','result_code','message','detected_color','target_x','target_y','target_z']
-  _slot_types = ['bool','int32','string','string','float64','float64','float64']
+  __slots__ = ['success','result_code','message','detected_color','target_x','target_y','target_z','detected_count','detected_colors','target_xs','target_ys','target_zs']
+  _slot_types = ['bool','int32','string','string','float64','float64','float64','int32','string[]','float64[]','float64[]','float64[]']
 
   def __init__(self, *args, **kwds):
     """
@@ -240,7 +245,7 @@ float64 target_z
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       success,result_code,message,detected_color,target_x,target_y,target_z
+       success,result_code,message,detected_color,target_x,target_y,target_z,detected_count,detected_colors,target_xs,target_ys,target_zs
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -263,6 +268,16 @@ float64 target_z
         self.target_y = 0.
       if self.target_z is None:
         self.target_z = 0.
+      if self.detected_count is None:
+        self.detected_count = 0
+      if self.detected_colors is None:
+        self.detected_colors = []
+      if self.target_xs is None:
+        self.target_xs = []
+      if self.target_ys is None:
+        self.target_ys = []
+      if self.target_zs is None:
+        self.target_zs = []
     else:
       self.success = False
       self.result_code = 0
@@ -271,6 +286,11 @@ float64 target_z
       self.target_x = 0.
       self.target_y = 0.
       self.target_z = 0.
+      self.detected_count = 0
+      self.detected_colors = []
+      self.target_xs = []
+      self.target_ys = []
+      self.target_zs = []
 
   def _get_types(self):
     """
@@ -299,7 +319,27 @@ float64 target_z
         length = len(_x)
       buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
       _x = self
-      buff.write(_get_struct_3d().pack(_x.target_x, _x.target_y, _x.target_z))
+      buff.write(_get_struct_3di().pack(_x.target_x, _x.target_y, _x.target_z, _x.detected_count))
+      length = len(self.detected_colors)
+      buff.write(_struct_I.pack(length))
+      for val1 in self.detected_colors:
+        length = len(val1)
+        if python3 or type(val1) == unicode:
+          val1 = val1.encode('utf-8')
+          length = len(val1)
+        buff.write(struct.Struct('<I%ss'%length).pack(length, val1))
+      length = len(self.target_xs)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sd'%length
+      buff.write(struct.Struct(pattern).pack(*self.target_xs))
+      length = len(self.target_ys)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sd'%length
+      buff.write(struct.Struct(pattern).pack(*self.target_ys))
+      length = len(self.target_zs)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sd'%length
+      buff.write(struct.Struct(pattern).pack(*self.target_zs))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -337,8 +377,47 @@ float64 target_z
         self.detected_color = str[start:end]
       _x = self
       start = end
-      end += 24
-      (_x.target_x, _x.target_y, _x.target_z,) = _get_struct_3d().unpack(str[start:end])
+      end += 28
+      (_x.target_x, _x.target_y, _x.target_z, _x.detected_count,) = _get_struct_3di().unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      self.detected_colors = []
+      for i in range(0, length):
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          val1 = str[start:end].decode('utf-8', 'rosmsg')
+        else:
+          val1 = str[start:end]
+        self.detected_colors.append(val1)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sd'%length
+      start = end
+      s = struct.Struct(pattern)
+      end += s.size
+      self.target_xs = s.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sd'%length
+      start = end
+      s = struct.Struct(pattern)
+      end += s.size
+      self.target_ys = s.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sd'%length
+      start = end
+      s = struct.Struct(pattern)
+      end += s.size
+      self.target_zs = s.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -366,7 +445,27 @@ float64 target_z
         length = len(_x)
       buff.write(struct.Struct('<I%ss'%length).pack(length, _x))
       _x = self
-      buff.write(_get_struct_3d().pack(_x.target_x, _x.target_y, _x.target_z))
+      buff.write(_get_struct_3di().pack(_x.target_x, _x.target_y, _x.target_z, _x.detected_count))
+      length = len(self.detected_colors)
+      buff.write(_struct_I.pack(length))
+      for val1 in self.detected_colors:
+        length = len(val1)
+        if python3 or type(val1) == unicode:
+          val1 = val1.encode('utf-8')
+          length = len(val1)
+        buff.write(struct.Struct('<I%ss'%length).pack(length, val1))
+      length = len(self.target_xs)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sd'%length
+      buff.write(self.target_xs.tostring())
+      length = len(self.target_ys)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sd'%length
+      buff.write(self.target_ys.tostring())
+      length = len(self.target_zs)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sd'%length
+      buff.write(self.target_zs.tostring())
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -405,8 +504,47 @@ float64 target_z
         self.detected_color = str[start:end]
       _x = self
       start = end
-      end += 24
-      (_x.target_x, _x.target_y, _x.target_z,) = _get_struct_3d().unpack(str[start:end])
+      end += 28
+      (_x.target_x, _x.target_y, _x.target_z, _x.detected_count,) = _get_struct_3di().unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      self.detected_colors = []
+      for i in range(0, length):
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          val1 = str[start:end].decode('utf-8', 'rosmsg')
+        else:
+          val1 = str[start:end]
+        self.detected_colors.append(val1)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sd'%length
+      start = end
+      s = struct.Struct(pattern)
+      end += s.size
+      self.target_xs = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=length)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sd'%length
+      start = end
+      s = struct.Struct(pattern)
+      end += s.size
+      self.target_ys = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=length)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sd'%length
+      start = end
+      s = struct.Struct(pattern)
+      end += s.size
+      self.target_zs = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=length)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -415,12 +553,12 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_3d = None
-def _get_struct_3d():
-    global _struct_3d
-    if _struct_3d is None:
-        _struct_3d = struct.Struct("<3d")
-    return _struct_3d
+_struct_3di = None
+def _get_struct_3di():
+    global _struct_3di
+    if _struct_3di is None:
+        _struct_3di = struct.Struct("<3di")
+    return _struct_3di
 _struct_Bi = None
 def _get_struct_Bi():
     global _struct_Bi
@@ -429,6 +567,6 @@ def _get_struct_Bi():
     return _struct_Bi
 class RunCommand(object):
   _type          = 'sagittarius_openclaw_bridge/RunCommand'
-  _md5sum = '1b28e903356241bb6dd2177521686ce9'
+  _md5sum = 'edabe0f39a90863c1a0eae298fff34ae'
   _request_class  = RunCommandRequest
   _response_class = RunCommandResponse

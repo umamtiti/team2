@@ -254,6 +254,11 @@ class RunCommandResponse {
       this.target_x = null;
       this.target_y = null;
       this.target_z = null;
+      this.detected_count = null;
+      this.detected_colors = null;
+      this.target_xs = null;
+      this.target_ys = null;
+      this.target_zs = null;
     }
     else {
       if (initObj.hasOwnProperty('success')) {
@@ -298,6 +303,36 @@ class RunCommandResponse {
       else {
         this.target_z = 0.0;
       }
+      if (initObj.hasOwnProperty('detected_count')) {
+        this.detected_count = initObj.detected_count
+      }
+      else {
+        this.detected_count = 0;
+      }
+      if (initObj.hasOwnProperty('detected_colors')) {
+        this.detected_colors = initObj.detected_colors
+      }
+      else {
+        this.detected_colors = [];
+      }
+      if (initObj.hasOwnProperty('target_xs')) {
+        this.target_xs = initObj.target_xs
+      }
+      else {
+        this.target_xs = [];
+      }
+      if (initObj.hasOwnProperty('target_ys')) {
+        this.target_ys = initObj.target_ys
+      }
+      else {
+        this.target_ys = [];
+      }
+      if (initObj.hasOwnProperty('target_zs')) {
+        this.target_zs = initObj.target_zs
+      }
+      else {
+        this.target_zs = [];
+      }
     }
   }
 
@@ -317,6 +352,16 @@ class RunCommandResponse {
     bufferOffset = _serializer.float64(obj.target_y, buffer, bufferOffset);
     // Serialize message field [target_z]
     bufferOffset = _serializer.float64(obj.target_z, buffer, bufferOffset);
+    // Serialize message field [detected_count]
+    bufferOffset = _serializer.int32(obj.detected_count, buffer, bufferOffset);
+    // Serialize message field [detected_colors]
+    bufferOffset = _arraySerializer.string(obj.detected_colors, buffer, bufferOffset, null);
+    // Serialize message field [target_xs]
+    bufferOffset = _arraySerializer.float64(obj.target_xs, buffer, bufferOffset, null);
+    // Serialize message field [target_ys]
+    bufferOffset = _arraySerializer.float64(obj.target_ys, buffer, bufferOffset, null);
+    // Serialize message field [target_zs]
+    bufferOffset = _arraySerializer.float64(obj.target_zs, buffer, bufferOffset, null);
     return bufferOffset;
   }
 
@@ -338,6 +383,16 @@ class RunCommandResponse {
     data.target_y = _deserializer.float64(buffer, bufferOffset);
     // Deserialize message field [target_z]
     data.target_z = _deserializer.float64(buffer, bufferOffset);
+    // Deserialize message field [detected_count]
+    data.detected_count = _deserializer.int32(buffer, bufferOffset);
+    // Deserialize message field [detected_colors]
+    data.detected_colors = _arrayDeserializer.string(buffer, bufferOffset, null)
+    // Deserialize message field [target_xs]
+    data.target_xs = _arrayDeserializer.float64(buffer, bufferOffset, null)
+    // Deserialize message field [target_ys]
+    data.target_ys = _arrayDeserializer.float64(buffer, bufferOffset, null)
+    // Deserialize message field [target_zs]
+    data.target_zs = _arrayDeserializer.float64(buffer, bufferOffset, null)
     return data;
   }
 
@@ -345,7 +400,13 @@ class RunCommandResponse {
     let length = 0;
     length += _getByteLength(object.message);
     length += _getByteLength(object.detected_color);
-    return length + 37;
+    object.detected_colors.forEach((val) => {
+      length += 4 + _getByteLength(val);
+    });
+    length += 8 * object.target_xs.length;
+    length += 8 * object.target_ys.length;
+    length += 8 * object.target_zs.length;
+    return length + 57;
   }
 
   static datatype() {
@@ -355,7 +416,7 @@ class RunCommandResponse {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '5cb39e6c96588ccbabca928ecc0edafb';
+    return '845e95e1ecaca59e1250bd15e5128521';
   }
 
   static messageDefinition() {
@@ -368,6 +429,11 @@ class RunCommandResponse {
     float64 target_x
     float64 target_y
     float64 target_z
+    int32 detected_count
+    string[] detected_colors
+    float64[] target_xs
+    float64[] target_ys
+    float64[] target_zs
     
     
     `;
@@ -428,6 +494,41 @@ class RunCommandResponse {
       resolved.target_z = 0.0
     }
 
+    if (msg.detected_count !== undefined) {
+      resolved.detected_count = msg.detected_count;
+    }
+    else {
+      resolved.detected_count = 0
+    }
+
+    if (msg.detected_colors !== undefined) {
+      resolved.detected_colors = msg.detected_colors;
+    }
+    else {
+      resolved.detected_colors = []
+    }
+
+    if (msg.target_xs !== undefined) {
+      resolved.target_xs = msg.target_xs;
+    }
+    else {
+      resolved.target_xs = []
+    }
+
+    if (msg.target_ys !== undefined) {
+      resolved.target_ys = msg.target_ys;
+    }
+    else {
+      resolved.target_ys = []
+    }
+
+    if (msg.target_zs !== undefined) {
+      resolved.target_zs = msg.target_zs;
+    }
+    else {
+      resolved.target_zs = []
+    }
+
     return resolved;
     }
 };
@@ -435,6 +536,6 @@ class RunCommandResponse {
 module.exports = {
   Request: RunCommandRequest,
   Response: RunCommandResponse,
-  md5sum() { return '1b28e903356241bb6dd2177521686ce9'; },
+  md5sum() { return 'edabe0f39a90863c1a0eae298fff34ae'; },
   datatype() { return 'sagittarius_openclaw_bridge/RunCommand'; }
 };

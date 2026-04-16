@@ -15,3 +15,8 @@ string detected_color
 float64 target_x
 float64 target_y
 float64 target_z
+int32 detected_count
+string[] detected_colors
+float64[] target_xs
+float64[] target_ys
+float64[] target_zs

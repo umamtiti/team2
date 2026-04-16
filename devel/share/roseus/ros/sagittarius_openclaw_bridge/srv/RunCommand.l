@@ -145,7 +145,7 @@
 
 (defclass sagittarius_openclaw_bridge::RunCommandResponse
   :super ros::object
-  :slots (_success _result_code _message _detected_color _target_x _target_y _target_z ))
+  :slots (_success _result_code _message _detected_color _target_x _target_y _target_z _detected_count _detected_colors _target_xs _target_ys _target_zs ))
 
 (defmethod sagittarius_openclaw_bridge::RunCommandResponse
   (:init
@@ -157,6 +157,11 @@
     ((:target_x __target_x) 0.0)
     ((:target_y __target_y) 0.0)
     ((:target_z __target_z) 0.0)
+    ((:detected_count __detected_count) 0)
+    ((:detected_colors __detected_colors) (let (r) (dotimes (i 0) (push "" r)) r))
+    ((:target_xs __target_xs) (make-array 0 :initial-element 0.0 :element-type :float))
+    ((:target_ys __target_ys) (make-array 0 :initial-element 0.0 :element-type :float))
+    ((:target_zs __target_zs) (make-array 0 :initial-element 0.0 :element-type :float))
     )
    (send-super :init)
    (setq _success __success)
@@ -166,6 +171,11 @@
    (setq _target_x (float __target_x))
    (setq _target_y (float __target_y))
    (setq _target_z (float __target_z))
+   (setq _detected_count (round __detected_count))
+   (setq _detected_colors __detected_colors)
+   (setq _target_xs __target_xs)
+   (setq _target_ys __target_ys)
+   (setq _target_zs __target_zs)
    self)
   (:success
    (&optional (__success :null))
@@ -188,6 +198,21 @@
   (:target_z
    (&optional __target_z)
    (if __target_z (setq _target_z __target_z)) _target_z)
+  (:detected_count
+   (&optional __detected_count)
+   (if __detected_count (setq _detected_count __detected_count)) _detected_count)
+  (:detected_colors
+   (&optional __detected_colors)
+   (if __detected_colors (setq _detected_colors __detected_colors)) _detected_colors)
+  (:target_xs
+   (&optional __target_xs)
+   (if __target_xs (setq _target_xs __target_xs)) _target_xs)
+  (:target_ys
+   (&optional __target_ys)
+   (if __target_ys (setq _target_ys __target_ys)) _target_ys)
+  (:target_zs
+   (&optional __target_zs)
+   (if __target_zs (setq _target_zs __target_zs)) _target_zs)
   (:serialization-length
    ()
    (+
@@ -205,6 +230,16 @@
     8
     ;; float64 _target_z
     8
+    ;; int32 _detected_count
+    4
+    ;; string[] _detected_colors
+    (apply #'+ (mapcar #'(lambda (x) (+ 4 (length x))) _detected_colors)) 4
+    ;; float64[] _target_xs
+    (* 8    (length _target_xs)) 4
+    ;; float64[] _target_ys
+    (* 8    (length _target_ys)) 4
+    ;; float64[] _target_zs
+    (* 8    (length _target_zs)) 4
     ))
   (:serialize
    (&optional strm)
@@ -224,6 +259,28 @@
        (sys::poke _target_y (send s :buffer) (send s :count) :double) (incf (stream-count s) 8)
      ;; float64 _target_z
        (sys::poke _target_z (send s :buffer) (send s :count) :double) (incf (stream-count s) 8)
+     ;; int32 _detected_count
+       (write-long _detected_count s)
+     ;; string[] _detected_colors
+     (write-long (length _detected_colors) s)
+     (dolist (elem _detected_colors)
+       (write-long (length elem) s) (princ elem s)
+       )
+     ;; float64[] _target_xs
+     (write-long (length _target_xs) s)
+     (dotimes (i (length _target_xs))
+       (sys::poke (elt _target_xs i) (send s :buffer) (send s :count) :double) (incf (stream-count s) 8)
+       )
+     ;; float64[] _target_ys
+     (write-long (length _target_ys) s)
+     (dotimes (i (length _target_ys))
+       (sys::poke (elt _target_ys i) (send s :buffer) (send s :count) :double) (incf (stream-count s) 8)
+       )
+     ;; float64[] _target_zs
+     (write-long (length _target_zs) s)
+     (dotimes (i (length _target_zs))
+       (sys::poke (elt _target_zs i) (send s :buffer) (send s :count) :double) (incf (stream-count s) 8)
+       )
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -242,6 +299,36 @@
      (setq _target_y (sys::peek buf ptr- :double)) (incf ptr- 8)
    ;; float64 _target_z
      (setq _target_z (sys::peek buf ptr- :double)) (incf ptr- 8)
+   ;; int32 _detected_count
+     (setq _detected_count (sys::peek buf ptr- :integer)) (incf ptr- 4)
+   ;; string[] _detected_colors
+   (let (n)
+     (setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)
+     (setq _detected_colors (make-list n))
+     (dotimes (i n)
+     (let (n) (setq n (sys::peek buf ptr- :integer)) (incf ptr- 4) (setf (elt _detected_colors i) (subseq buf ptr- (+ ptr- n))) (incf ptr- n))
+     ))
+   ;; float64[] _target_xs
+   (let (n)
+     (setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)
+     (setq _target_xs (instantiate float-vector n))
+     (dotimes (i n)
+     (setf (elt _target_xs i) (sys::peek buf ptr- :double)) (incf ptr- 8)
+     ))
+   ;; float64[] _target_ys
+   (let (n)
+     (setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)
+     (setq _target_ys (instantiate float-vector n))
+     (dotimes (i n)
+     (setf (elt _target_ys i) (sys::peek buf ptr- :double)) (incf ptr- 8)
+     ))
+   ;; float64[] _target_zs
+   (let (n)
+     (setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)
+     (setq _target_zs (instantiate float-vector n))
+     (dotimes (i n)
+     (setf (elt _target_zs i) (sys::peek buf ptr- :double)) (incf ptr- 8)
+     ))
    ;;
    self)
   )
@@ -250,7 +337,7 @@
   :super ros::object
   :slots ())
 
-(setf (get sagittarius_openclaw_bridge::RunCommand :md5sum-) "1b28e903356241bb6dd2177521686ce9")
+(setf (get sagittarius_openclaw_bridge::RunCommand :md5sum-) "edabe0f39a90863c1a0eae298fff34ae")
 (setf (get sagittarius_openclaw_bridge::RunCommand :datatype-) "sagittarius_openclaw_bridge/RunCommand")
 (setf (get sagittarius_openclaw_bridge::RunCommand :request) sagittarius_openclaw_bridge::RunCommandRequest)
 (setf (get sagittarius_openclaw_bridge::RunCommand :response) sagittarius_openclaw_bridge::RunCommandResponse)
@@ -258,7 +345,7 @@
 (defmethod sagittarius_openclaw_bridge::RunCommandRequest
   (:response () (instance sagittarius_openclaw_bridge::RunCommandResponse :init)))
 
-(setf (get sagittarius_openclaw_bridge::RunCommandRequest :md5sum-) "1b28e903356241bb6dd2177521686ce9")
+(setf (get sagittarius_openclaw_bridge::RunCommandRequest :md5sum-) "edabe0f39a90863c1a0eae298fff34ae")
 (setf (get sagittarius_openclaw_bridge::RunCommandRequest :datatype-) "sagittarius_openclaw_bridge/RunCommandRequest")
 (setf (get sagittarius_openclaw_bridge::RunCommandRequest :definition-)
       "string command
@@ -278,10 +365,15 @@ string detected_color
 float64 target_x
 float64 target_y
 float64 target_z
+int32 detected_count
+string[] detected_colors
+float64[] target_xs
+float64[] target_ys
+float64[] target_zs
 
 ")
 
-(setf (get sagittarius_openclaw_bridge::RunCommandResponse :md5sum-) "1b28e903356241bb6dd2177521686ce9")
+(setf (get sagittarius_openclaw_bridge::RunCommandResponse :md5sum-) "edabe0f39a90863c1a0eae298fff34ae")
 (setf (get sagittarius_openclaw_bridge::RunCommandResponse :datatype-) "sagittarius_openclaw_bridge/RunCommandResponse")
 (setf (get sagittarius_openclaw_bridge::RunCommandResponse :definition-)
       "string command
@@ -301,11 +393,16 @@ string detected_color
 float64 target_x
 float64 target_y
 float64 target_z
+int32 detected_count
+string[] detected_colors
+float64[] target_xs
+float64[] target_ys
+float64[] target_zs
 
 ")
 
 
 
-(provide :sagittarius_openclaw_bridge/RunCommand "1b28e903356241bb6dd2177521686ce9")
+(provide :sagittarius_openclaw_bridge/RunCommand "edabe0f39a90863c1a0eae298fff34ae")
 
 

@@ -40,7 +40,7 @@ template<>
 struct MD5Sum< ::sagittarius_openclaw_bridge::RunCommand > {
   static const char* value()
   {
-    return "1b28e903356241bb6dd2177521686ce9";
+    return "edabe0f39a90863c1a0eae298fff34ae";
   }
 
   static const char* value(const ::sagittarius_openclaw_bridge::RunCommand&) { return value(); }

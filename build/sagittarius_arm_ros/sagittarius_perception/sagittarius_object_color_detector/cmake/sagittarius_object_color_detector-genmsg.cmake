@@ -19,22 +19,22 @@ add_custom_target(sagittarius_object_color_detector_generate_messages ALL)
 
 get_filename_component(_filename "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg" NAME_WE)
 add_custom_target(_sagittarius_object_color_detector_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg" "actionlib_msgs/GoalID:sagittarius_object_color_detector/SGRCtrlFeedback:sagittarius_object_color_detector/SGRCtrlResult:sagittarius_object_color_detector/SGRCtrlActionFeedback:std_msgs/Header:sagittarius_object_color_detector/SGRCtrlGoal:sagittarius_object_color_detector/SGRCtrlActionGoal:actionlib_msgs/GoalStatus:sagittarius_object_color_detector/SGRCtrlActionResult"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg" "actionlib_msgs/GoalStatus:sagittarius_object_color_detector/SGRCtrlResult:sagittarius_object_color_detector/SGRCtrlFeedback:actionlib_msgs/GoalID:std_msgs/Header:sagittarius_object_color_detector/SGRCtrlActionGoal:sagittarius_object_color_detector/SGRCtrlActionFeedback:sagittarius_object_color_detector/SGRCtrlGoal:sagittarius_object_color_detector/SGRCtrlActionResult"
 )
 
 get_filename_component(_filename "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg" NAME_WE)
 add_custom_target(_sagittarius_object_color_detector_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg" "actionlib_msgs/GoalID:sagittarius_object_color_detector/SGRCtrlGoal:std_msgs/Header"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg" "actionlib_msgs/GoalID:std_msgs/Header:sagittarius_object_color_detector/SGRCtrlGoal"
 )
 
 get_filename_component(_filename "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg" NAME_WE)
 add_custom_target(_sagittarius_object_color_detector_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg" "actionlib_msgs/GoalID:sagittarius_object_color_detector/SGRCtrlResult:actionlib_msgs/GoalStatus:std_msgs/Header"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg" "actionlib_msgs/GoalStatus:std_msgs/Header:sagittarius_object_color_detector/SGRCtrlResult:actionlib_msgs/GoalID"
 )
 
 get_filename_component(_filename "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg" NAME_WE)
 add_custom_target(_sagittarius_object_color_detector_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg" "actionlib_msgs/GoalID:sagittarius_object_color_detector/SGRCtrlFeedback:actionlib_msgs/GoalStatus:std_msgs/Header"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "sagittarius_object_color_detector" "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg" "actionlib_msgs/GoalStatus:std_msgs/Header:actionlib_msgs/GoalID:sagittarius_object_color_detector/SGRCtrlFeedback"
 )
 
 get_filename_component(_filename "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg" NAME_WE)
@@ -61,25 +61,25 @@ add_custom_target(_sagittarius_object_color_detector_generate_messages_check_dep
 _generate_msg_cpp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_cpp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_cpp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_cpp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_cpp(sagittarius_object_color_detector
@@ -142,25 +142,25 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS sagittarius_object_color_detector_g
 _generate_msg_eus(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_eus(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_eus(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_eus(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_eus(sagittarius_object_color_detector
@@ -223,25 +223,25 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS sagittarius_object_color_detector_g
 _generate_msg_lisp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_lisp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_lisp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_lisp(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_lisp(sagittarius_object_color_detector
@@ -304,25 +304,25 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS sagittarius_object_color_detector_g
 _generate_msg_nodejs(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_nodejs(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_nodejs(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_nodejs(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_nodejs(sagittarius_object_color_detector
@@ -385,25 +385,25 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS sagittarius_object_color_detector_g
 _generate_msg_py(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_py(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_py(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_py(sagittarius_object_color_detector
   "/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg"
+  "/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalStatus.msg;/opt/ros/noetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/noetic/share/actionlib_msgs/cmake/../msg/GoalID.msg;/home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/sagittarius_object_color_detector
 )
 _generate_msg_py(sagittarius_object_color_detector

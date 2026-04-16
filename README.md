@@ -97,6 +97,18 @@ Detect any supported visible color:
 rosrun sagittarius_openclaw_bridge openclaw_cmd.py detect-color
 ```
 
+Detect all stable visible colors at once:
+
+```bash
+rosrun sagittarius_openclaw_bridge openclaw_cmd.py detect-all-colors
+```
+
+Detect all visible color blocks at once and return each object's color and position:
+
+```bash
+rosrun sagittarius_openclaw_bridge openclaw_cmd.py detect-all-objects
+```
+
 ### Basic manipulation commands
 
 Pick a specified color once:
@@ -171,6 +183,8 @@ rosrun sagittarius_openclaw_bridge openclaw_cmd.py classify-once-map
 rosrun sagittarius_openclaw_bridge openclaw_cmd.py status
 rosrun sagittarius_openclaw_bridge openclaw_cmd.py search
 rosrun sagittarius_openclaw_bridge openclaw_cmd.py detect-color --color blue
+rosrun sagittarius_openclaw_bridge openclaw_cmd.py detect-all-colors
+rosrun sagittarius_openclaw_bridge openclaw_cmd.py detect-all-objects
 ```
 
 ### Workflow 2: Pick a blue block
@@ -205,6 +219,8 @@ The backend exposes the `openclaw/run_command` service. Supported commands are:
 - `sleep`
 - `search`
 - `detect_color`
+- `detect_all_colors`
+- `detect_all_objects`
 - `pick_once`
 - `pick_any`
 - `pick_and_place`

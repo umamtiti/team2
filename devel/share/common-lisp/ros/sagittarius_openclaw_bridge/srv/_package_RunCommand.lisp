@@ -31,4 +31,14 @@
           TARGET_Y
           TARGET_Z-VAL
           TARGET_Z
+          DETECTED_COUNT-VAL
+          DETECTED_COUNT
+          DETECTED_COLORS-VAL
+          DETECTED_COLORS
+          TARGET_XS-VAL
+          TARGET_XS
+          TARGET_YS-VAL
+          TARGET_YS
+          TARGET_ZS-VAL
+          TARGET_ZS
 ))

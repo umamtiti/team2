@@ -59,6 +59,14 @@ def build_parser():
         default="",
         help="Optional target color: blue/red/green; omit to detect any visible color",
     )
+    subparsers.add_parser(
+        "detect-all-colors",
+        help="Detect all stable visible colors and return their workspace positions",
+    )
+    subparsers.add_parser(
+        "detect-all-objects",
+        help="Detect all visible color blocks and return each object's color and workspace position",
+    )
 
     pick_and_place_parser = subparsers.add_parser(
         "pick-and-place",
@@ -149,14 +157,28 @@ def main():
     print("success: {}".format(str(response.success).lower()))
     print("result_code: {}".format(response.result_code))
     print("message: {}".format(response.message))
-    if response.detected_color:
+    has_multi_targets = bool(getattr(response, "detected_colors", []))
+    if getattr(response, "detected_count", 0):
+        print("detected_count: {}".format(response.detected_count))
+    if response.detected_color and not has_multi_targets:
         print("detected_color: {}".format(response.detected_color))
-    if response.target_x or response.target_y or response.target_z:
+    if (response.target_x or response.target_y or response.target_z) and not has_multi_targets:
         print(
             "target_xyz: {:.4f} {:.4f} {:.4f}".format(
                 response.target_x, response.target_y, response.target_z
             )
         )
+    if has_multi_targets:
+        print("detected_targets:")
+        for index, color_name in enumerate(response.detected_colors):
+            print(
+                "  {}: {:.4f} {:.4f} {:.4f}".format(
+                    color_name,
+                    response.target_xs[index],
+                    response.target_ys[index],
+                    response.target_zs[index],
+                )
+            )
 
     return 0 if response.success else 1
 

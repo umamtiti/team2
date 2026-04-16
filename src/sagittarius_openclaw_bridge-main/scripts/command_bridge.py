@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+from collections import Counter
 
 import actionlib
 import cv2
@@ -118,8 +119,22 @@ class OpenClawCommandBridge:
                 return
             rospy.loginfo_throttle(5, "Still waiting for %s", self.action_name)
 
-    def _response(self, success, result_code, message, detected_color="", target_xyz=None):
+    def _response(
+        self,
+        success,
+        result_code,
+        message,
+        detected_color="",
+        target_xyz=None,
+        detected_count=None,
+        detected_colors=None,
+        target_xyzs=None,
+    ):
         target_xyz = target_xyz or (0.0, 0.0, 0.0)
+        detected_colors = detected_colors or []
+        target_xyzs = target_xyzs or []
+        if detected_count is None:
+            detected_count = len(detected_colors)
         return RunCommandResponse(
             success=success,
             result_code=result_code,
@@ -128,6 +143,11 @@ class OpenClawCommandBridge:
             target_x=target_xyz[0],
             target_y=target_xyz[1],
             target_z=target_xyz[2],
+            detected_count=detected_count,
+            detected_colors=detected_colors,
+            target_xs=[xyz[0] for xyz in target_xyzs],
+            target_ys=[xyz[1] for xyz in target_xyzs],
+            target_zs=[xyz[2] for xyz in target_xyzs],
         )
 
     def _normalize_command(self, command):
@@ -196,6 +216,13 @@ class OpenClawCommandBridge:
         return lower, upper
 
     def _largest_object(self, cv_image, lower_hsv, upper_hsv):
+        objects = self._find_objects(cv_image, lower_hsv, upper_hsv)
+        if not objects:
+            return 0.0, 0.0, 0.0
+        largest = max(objects, key=lambda item: item[0])
+        return largest
+
+    def _find_objects(self, cv_image, lower_hsv, upper_hsv):
         hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
         if lower_hsv[0] > upper_hsv[0]:
             lower_a = np.array([0, lower_hsv[1], lower_hsv[2]], dtype=np.uint8)
@@ -216,9 +243,7 @@ class OpenClawCommandBridge:
         contours_info = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         contours = contours_info[0] if len(contours_info) == 2 else contours_info[1]
 
-        size_max = 0.0
-        xc = 0.0
-        yc = 0.0
+        objects = []
         for contour in contours:
             rect = cv2.minAreaRect(contour)
             box = cv2.boxPoints(rect).astype(int)
@@ -227,11 +252,8 @@ class OpenClawCommandBridge:
             width = np.linalg.norm(box[0] - box[1])
             height = np.linalg.norm(box[0] - box[3])
             size = float(width * height)
-            if size > size_max:
-                size_max = size
-                xc = float(x_mid)
-                yc = float(y_mid)
-        return size_max, xc, yc
+            objects.append((size, float(x_mid), float(y_mid)))
+        return objects
 
     def _wait_for_stable_detection(self, bounds_by_color, min_area):
         deadline = None if self.find_timeout <= 0 else time.time() + self.find_timeout
@@ -293,6 +315,76 @@ class OpenClawCommandBridge:
             ),
         )
 
+    def _wait_for_all_stable_detections(self, bounds_by_color, min_area):
+        deadline = None if self.find_timeout <= 0 else time.time() + self.find_timeout
+        stable_counts = dict((color, 0) for color in bounds_by_color)
+        last_points = dict((color, None) for color in bounds_by_color)
+        detections = {}
+
+        if deadline is None:
+            rospy.loginfo(
+                "Waiting for stable objects on %s without timeout",
+                self.image_topic,
+            )
+        else:
+            rospy.loginfo(
+                "Waiting for stable objects on %s (timeout %.1fs)",
+                self.image_topic,
+                self.find_timeout,
+            )
+
+        while not rospy.is_shutdown() and (deadline is None or time.time() < deadline):
+            try:
+                image_msg = rospy.wait_for_message(self.image_topic, Image, timeout=1.0)
+            except rospy.ROSException:
+                continue
+
+            try:
+                cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+            except CvBridgeError as exc:
+                raise BridgeError(
+                    BRIDGE_VISION_CONFIG_ERROR,
+                    "Failed to decode image from {}: {}".format(self.image_topic, exc),
+                )
+
+            for color_name, (lower_hsv, upper_hsv) in bounds_by_color.items():
+                if color_name in detections:
+                    continue
+
+                size, xc, yc = self._largest_object(cv_image, lower_hsv, upper_hsv)
+                if size < min_area:
+                    stable_counts[color_name] = 0
+                    last_points[color_name] = None
+                    continue
+
+                last_point = last_points[color_name]
+                if (
+                    last_point is not None
+                    and abs(xc - last_point[0]) <= self.stable_tolerance_px
+                    and abs(yc - last_point[1]) <= self.stable_tolerance_px
+                ):
+                    stable_counts[color_name] += 1
+                else:
+                    stable_counts[color_name] = 1
+                last_points[color_name] = (xc, yc)
+
+                if stable_counts[color_name] >= self.stable_samples:
+                    detections[color_name] = (xc, yc)
+
+            if len(detections) == len(bounds_by_color):
+                break
+
+        if detections:
+            return detections
+
+        raise BridgeError(
+            BRIDGE_OBJECT_NOT_FOUND,
+            "No stable object was detected on {} within {:.1f}s".format(
+                self.image_topic,
+                self.find_timeout,
+            ),
+        )
+
     def _pixel_to_workspace(self, xc, yc, content):
         k1, b1, k2, b2 = self._require_calibration(content)
         target_x = k1 * yc + b1
@@ -340,6 +432,54 @@ class OpenClawCommandBridge:
         )
         target_x, target_y = self._pixel_to_workspace(xc, yc, content)
         return detected_color, xc, yc, target_x, target_y
+
+    def _detect_all_targets(self, min_area=None, move_to_search=False):
+        if move_to_search:
+            self._move_to_search_pose()
+
+        content = self._load_vision_config()
+        bounds = self._build_detection_bounds(content, "")
+        detections = self._wait_for_all_stable_detections(
+            bounds,
+            self.min_pick_area if min_area is None else min_area,
+        )
+
+        results = []
+        for color_name in DEFAULT_DETECTION_COLORS:
+            if color_name not in detections:
+                continue
+            xc, yc = detections[color_name]
+            target_x, target_y = self._pixel_to_workspace(xc, yc, content)
+            results.append((color_name, xc, yc, target_x, target_y))
+        return results
+
+    def _detect_all_objects(self, min_area=None, move_to_search=False):
+        if move_to_search:
+            self._move_to_search_pose()
+
+        content = self._load_vision_config()
+        bounds = self._build_detection_bounds(content, "")
+        cv_image = self._capture_image(self.status_timeout)
+        min_area = self.min_pick_area if min_area is None else min_area
+
+        results = []
+        for color_name in DEFAULT_DETECTION_COLORS:
+            lower_hsv, upper_hsv = bounds[color_name]
+            objects = self._find_objects(cv_image, lower_hsv, upper_hsv)
+            for size, xc, yc in objects:
+                if size < min_area:
+                    continue
+                target_x, target_y = self._pixel_to_workspace(xc, yc, content)
+                results.append((color_name, xc, yc, target_x, target_y, size))
+
+        if not results:
+            raise BridgeError(
+                BRIDGE_OBJECT_NOT_FOUND,
+                "No objects were detected on {}".format(self.image_topic),
+            )
+
+        results.sort(key=lambda item: (item[3], item[4], item[0]))
+        return results
 
     def _run_action(self, goal, description):
         self.client.send_goal(goal)
@@ -562,6 +702,74 @@ class OpenClawCommandBridge:
             message,
             detected_color=detected_color,
             target_xyz=(target_x, target_y, self.pick_z),
+        )
+
+    def _handle_detect_all_colors(self):
+        detections = self._detect_all_targets(
+            min_area=self.min_pick_area,
+            move_to_search=True,
+        )
+        detected_colors = [item[0] for item in detections]
+        target_xyzs = [(item[3], item[4], self.pick_z) for item in detections]
+        details = ", ".join(
+            "{} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f})".format(
+                color_name,
+                xc,
+                yc,
+                target_x,
+                target_y,
+                self.pick_z,
+            )
+            for color_name, xc, yc, target_x, target_y in detections
+        )
+        return self._response(
+            True,
+            SGRCtrlResult.SUCCESS,
+            "detect_all_colors {}".format(details),
+            detected_color=detected_colors[0],
+            target_xyz=target_xyzs[0],
+            detected_count=len(detected_colors),
+            detected_colors=detected_colors,
+            target_xyzs=target_xyzs,
+        )
+
+    def _handle_detect_all_objects(self):
+        detections = self._detect_all_objects(
+            min_area=self.min_pick_area,
+            move_to_search=True,
+        )
+        detected_colors = [item[0] for item in detections]
+        target_xyzs = [(item[3], item[4], self.pick_z) for item in detections]
+        color_counts = Counter(detected_colors)
+        summary = ", ".join(
+            "{}={}".format(color_name, color_counts[color_name])
+            for color_name in DEFAULT_DETECTION_COLORS
+            if color_counts.get(color_name, 0) > 0
+        )
+        details = ", ".join(
+            "{} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f})".format(
+                color_name,
+                xc,
+                yc,
+                target_x,
+                target_y,
+                self.pick_z,
+            )
+            for color_name, xc, yc, target_x, target_y, _ in detections
+        )
+        return self._response(
+            True,
+            SGRCtrlResult.SUCCESS,
+            "detect_all_objects count={} [{}] {}".format(
+                len(detections),
+                summary,
+                details,
+            ),
+            detected_color=detected_colors[0],
+            target_xyz=target_xyzs[0],
+            detected_count=len(detections),
+            detected_colors=detected_colors,
+            target_xyzs=target_xyzs,
         )
 
     def _handle_pick_once(self, req):
@@ -1014,6 +1222,10 @@ class OpenClawCommandBridge:
                 return self._handle_search()
             if command in ("detect_color", "find_color"):
                 return self._handle_detect_color(req)
+            if command in ("detect_all_colors", "find_all_colors"):
+                return self._handle_detect_all_colors()
+            if command in ("detect_all_objects", "find_all_objects"):
+                return self._handle_detect_all_objects()
             if command in ("pick_once", "grasp_once"):
                 return self._handle_pick_once(req)
             if command in ("pick_any", "grasp_any"):
@@ -1031,7 +1243,7 @@ class OpenClawCommandBridge:
             raise BridgeError(
                 BRIDGE_UNSUPPORTED_COMMAND,
                 "Unsupported command '{}'; supported commands: move, pick, put, stay, "
-                "sleep, search, detect_color, pick_once, pick_any, pick_and_place, "
+                "sleep, search, detect_color, detect_all_colors, detect_all_objects, pick_once, pick_any, pick_and_place, "
                 "classify_once_fixed, sort_all_fixed, classify_once_map, status".format(
                     req.command
                 ),

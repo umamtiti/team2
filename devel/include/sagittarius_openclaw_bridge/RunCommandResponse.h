@@ -30,7 +30,12 @@ struct RunCommandResponse_
     , detected_color()
     , target_x(0.0)
     , target_y(0.0)
-    , target_z(0.0)  {
+    , target_z(0.0)
+    , detected_count(0)
+    , detected_colors()
+    , target_xs()
+    , target_ys()
+    , target_zs()  {
     }
   RunCommandResponse_(const ContainerAllocator& _alloc)
     : success(false)
@@ -39,7 +44,12 @@ struct RunCommandResponse_
     , detected_color(_alloc)
     , target_x(0.0)
     , target_y(0.0)
-    , target_z(0.0)  {
+    , target_z(0.0)
+    , detected_count(0)
+    , detected_colors(_alloc)
+    , target_xs(_alloc)
+    , target_ys(_alloc)
+    , target_zs(_alloc)  {
   (void)_alloc;
     }
 
@@ -65,6 +75,21 @@ struct RunCommandResponse_
 
    typedef double _target_z_type;
   _target_z_type target_z;
+
+   typedef int32_t _detected_count_type;
+  _detected_count_type detected_count;
+
+   typedef std::vector<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>>> _detected_colors_type;
+  _detected_colors_type detected_colors;
+
+   typedef std::vector<double, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<double>> _target_xs_type;
+  _target_xs_type target_xs;
+
+   typedef std::vector<double, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<double>> _target_ys_type;
+  _target_ys_type target_ys;
+
+   typedef std::vector<double, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<double>> _target_zs_type;
+  _target_zs_type target_zs;
 
 
 
@@ -101,7 +126,12 @@ bool operator==(const ::sagittarius_openclaw_bridge::RunCommandResponse_<Contain
     lhs.detected_color == rhs.detected_color &&
     lhs.target_x == rhs.target_x &&
     lhs.target_y == rhs.target_y &&
-    lhs.target_z == rhs.target_z;
+    lhs.target_z == rhs.target_z &&
+    lhs.detected_count == rhs.detected_count &&
+    lhs.detected_colors == rhs.detected_colors &&
+    lhs.target_xs == rhs.target_xs &&
+    lhs.target_ys == rhs.target_ys &&
+    lhs.target_zs == rhs.target_zs;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -158,12 +188,12 @@ struct MD5Sum< ::sagittarius_openclaw_bridge::RunCommandResponse_<ContainerAlloc
 {
   static const char* value()
   {
-    return "5cb39e6c96588ccbabca928ecc0edafb";
+    return "845e95e1ecaca59e1250bd15e5128521";
   }
 
   static const char* value(const ::sagittarius_openclaw_bridge::RunCommandResponse_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x5cb39e6c96588ccbULL;
-  static const uint64_t static_value2 = 0xabca928ecc0edafbULL;
+  static const uint64_t static_value1 = 0x845e95e1ecaca59eULL;
+  static const uint64_t static_value2 = 0x1250bd15e5128521ULL;
 };
 
 template<class ContainerAllocator>
@@ -189,6 +219,11 @@ struct Definition< ::sagittarius_openclaw_bridge::RunCommandResponse_<ContainerA
 "float64 target_x\n"
 "float64 target_y\n"
 "float64 target_z\n"
+"int32 detected_count\n"
+"string[] detected_colors\n"
+"float64[] target_xs\n"
+"float64[] target_ys\n"
+"float64[] target_zs\n"
 "\n"
 ;
   }
@@ -215,6 +250,11 @@ namespace serialization
       stream.next(m.target_x);
       stream.next(m.target_y);
       stream.next(m.target_z);
+      stream.next(m.detected_count);
+      stream.next(m.detected_colors);
+      stream.next(m.target_xs);
+      stream.next(m.target_ys);
+      stream.next(m.target_zs);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -261,6 +301,70 @@ struct Printer< ::sagittarius_openclaw_bridge::RunCommandResponse_<ContainerAllo
       s << std::endl;
     s << indent << "target_z: ";
     Printer<double>::stream(s, indent + "  ", v.target_z);
+    if (true || !indent.empty())
+      s << std::endl;
+    s << indent << "detected_count: ";
+    Printer<int32_t>::stream(s, indent + "  ", v.detected_count);
+    if (true || !indent.empty())
+      s << std::endl;
+    s << indent << "detected_colors: ";
+    if (v.detected_colors.empty() || true)
+      s << "[";
+    for (size_t i = 0; i < v.detected_colors.size(); ++i)
+    {
+      if (true && i > 0)
+        s << ", ";
+      else if (!true)
+        s << std::endl << indent << "  -";
+      Printer<std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>>::stream(s, true ? std::string() : indent + "    ", v.detected_colors[i]);
+    }
+    if (v.detected_colors.empty() || true)
+      s << "]";
+    if (true || !indent.empty())
+      s << std::endl;
+    s << indent << "target_xs: ";
+    if (v.target_xs.empty() || true)
+      s << "[";
+    for (size_t i = 0; i < v.target_xs.size(); ++i)
+    {
+      if (true && i > 0)
+        s << ", ";
+      else if (!true)
+        s << std::endl << indent << "  -";
+      Printer<double>::stream(s, true ? std::string() : indent + "    ", v.target_xs[i]);
+    }
+    if (v.target_xs.empty() || true)
+      s << "]";
+    if (true || !indent.empty())
+      s << std::endl;
+    s << indent << "target_ys: ";
+    if (v.target_ys.empty() || true)
+      s << "[";
+    for (size_t i = 0; i < v.target_ys.size(); ++i)
+    {
+      if (true && i > 0)
+        s << ", ";
+      else if (!true)
+        s << std::endl << indent << "  -";
+      Printer<double>::stream(s, true ? std::string() : indent + "    ", v.target_ys[i]);
+    }
+    if (v.target_ys.empty() || true)
+      s << "]";
+    if (true || !indent.empty())
+      s << std::endl;
+    s << indent << "target_zs: ";
+    if (v.target_zs.empty() || true)
+      s << "[";
+    for (size_t i = 0; i < v.target_zs.size(); ++i)
+    {
+      if (true && i > 0)
+        s << ", ";
+      else if (!true)
+        s << std::endl << indent << "  -";
+      Printer<double>::stream(s, true ? std::string() : indent + "    ", v.target_zs[i]);
+    }
+    if (v.target_zs.empty() || true)
+      s << "]";
   }
 };
 
