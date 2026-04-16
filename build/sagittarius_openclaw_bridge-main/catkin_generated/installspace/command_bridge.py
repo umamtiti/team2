@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import time
-from collections import Counter
+from collections import Counter, deque
 
 import actionlib
 import cv2
@@ -27,6 +27,11 @@ BRIDGE_INVALID_REQUEST = 1004
 BRIDGE_ACTION_ERROR = 1005
 
 DEFAULT_DETECTION_COLORS = ("red", "green", "blue")
+DEBUG_COLOR_MAP = {
+    "red": (0, 0, 255),
+    "green": (0, 255, 0),
+    "blue": (255, 0, 0),
+}
 
 
 class BridgeError(RuntimeError):
@@ -64,6 +69,7 @@ class OpenClawCommandBridge:
         self.sort_max_rounds = int(rospy.get_param("~sort_max_rounds", 12))
         self.map_region_samples = int(rospy.get_param("~map_region_samples", 5))
         self.map_region_timeout = float(rospy.get_param("~map_region_timeout", 3.0))
+        self.publish_debug_images = bool(rospy.get_param("~publish_debug_images", False))
 
         self.fixed_drop_positions = rospy.get_param(
             "~fixed_drop_positions",
@@ -108,9 +114,28 @@ class OpenClawCommandBridge:
 
         self.bridge = CvBridge()
         self.client = actionlib.SimpleActionClient(self.action_name, SGRCtrlAction)
+        self._init_debug_publishers()
         self._wait_for_action_server()
         self.service = rospy.Service(self.service_name, RunCommand, self.handle_request)
         rospy.loginfo("OpenClaw bridge ready on service %s", self.service_name)
+
+    def _init_debug_publishers(self):
+        self.debug_normalized_pub = None
+        self.debug_overlay_pub = None
+        self.debug_mask_pubs = {}
+        if not self.publish_debug_images:
+            return
+
+        self.debug_normalized_pub = rospy.Publisher(
+            "~debug/normalized", Image, queue_size=1
+        )
+        self.debug_overlay_pub = rospy.Publisher("~debug/overlay", Image, queue_size=1)
+        for color_name in DEFAULT_DETECTION_COLORS:
+            self.debug_mask_pubs[color_name] = rospy.Publisher(
+                "~debug/mask_{}".format(color_name),
+                Image,
+                queue_size=1,
+            )
 
     def _wait_for_action_server(self):
         rospy.loginfo("Waiting for Sagittarius action server %s", self.action_name)
@@ -189,6 +214,101 @@ class OpenClawCommandBridge:
             )
         return k1, b1, k2, b2
 
+    def _default_detection_tuning(self):
+        return {
+            "roi": {
+                "x_min": 40,
+                "x_max": 600,
+                "y_min": 40,
+                "y_max": 460,
+            },
+            "min_pick_area": self.min_pick_area,
+            "max_pick_area": 90000.0,
+            "aspect_ratio_min": 0.55,
+            "aspect_ratio_max": 1.75,
+            "vote_window": 8,
+            "vote_min_hits": max(1, self.stable_samples),
+            "vote_tolerance_px": min(self.stable_tolerance_px, 8.0),
+            "multi_frame_count": 8,
+            "multi_min_hits": 4,
+            "multi_merge_tolerance_px": max(self.stable_tolerance_px, 12.0),
+            "clahe_clip_limit": 2.0,
+            "clahe_grid_size": 8,
+        }
+
+    def _load_detection_tuning(self, content):
+        defaults = self._default_detection_tuning()
+        tuning_cfg = content.get("DetectionTuning") or {}
+        roi_cfg = tuning_cfg.get("roi") or {}
+
+        roi = {}
+        for key, default_value in defaults["roi"].items():
+            roi[key] = int(roi_cfg.get(key, default_value))
+
+        tuning = {
+            "roi": roi,
+            "min_pick_area": float(
+                tuning_cfg.get("min_pick_area", defaults["min_pick_area"])
+            ),
+            "max_pick_area": float(
+                tuning_cfg.get("max_pick_area", defaults["max_pick_area"])
+            ),
+            "aspect_ratio_min": float(
+                tuning_cfg.get("aspect_ratio_min", defaults["aspect_ratio_min"])
+            ),
+            "aspect_ratio_max": float(
+                tuning_cfg.get("aspect_ratio_max", defaults["aspect_ratio_max"])
+            ),
+            "vote_window": max(
+                1, int(tuning_cfg.get("vote_window", defaults["vote_window"]))
+            ),
+            "vote_min_hits": max(
+                1, int(tuning_cfg.get("vote_min_hits", defaults["vote_min_hits"]))
+            ),
+            "vote_tolerance_px": float(
+                tuning_cfg.get("vote_tolerance_px", defaults["vote_tolerance_px"])
+            ),
+            "multi_frame_count": max(
+                1,
+                int(
+                    tuning_cfg.get(
+                        "multi_frame_count", defaults["multi_frame_count"]
+                    )
+                ),
+            ),
+            "multi_min_hits": max(
+                1, int(tuning_cfg.get("multi_min_hits", defaults["multi_min_hits"]))
+            ),
+            "multi_merge_tolerance_px": float(
+                tuning_cfg.get(
+                    "multi_merge_tolerance_px",
+                    defaults["multi_merge_tolerance_px"],
+                )
+            ),
+            "clahe_clip_limit": float(
+                tuning_cfg.get("clahe_clip_limit", defaults["clahe_clip_limit"])
+            ),
+            "clahe_grid_size": max(
+                1, int(tuning_cfg.get("clahe_grid_size", defaults["clahe_grid_size"]))
+            ),
+        }
+
+        tuning["vote_min_hits"] = min(tuning["vote_min_hits"], tuning["vote_window"])
+        tuning["multi_min_hits"] = min(
+            tuning["multi_min_hits"], tuning["multi_frame_count"]
+        )
+
+        if tuning["aspect_ratio_min"] > tuning["aspect_ratio_max"]:
+            tuning["aspect_ratio_min"], tuning["aspect_ratio_max"] = (
+                tuning["aspect_ratio_max"],
+                tuning["aspect_ratio_min"],
+            )
+
+        if tuning["max_pick_area"] < tuning["min_pick_area"]:
+            tuning["max_pick_area"] = tuning["min_pick_area"] * 4.0
+
+        return tuning
+
     def _get_color_bounds(self, content, color_name):
         if color_name not in content:
             raise BridgeError(
@@ -215,15 +335,74 @@ class OpenClawCommandBridge:
         )
         return lower, upper
 
-    def _largest_object(self, cv_image, lower_hsv, upper_hsv):
-        objects = self._find_objects(cv_image, lower_hsv, upper_hsv)
-        if not objects:
-            return 0.0, 0.0, 0.0
-        largest = max(objects, key=lambda item: item[0])
-        return largest
+    def _wait_for_image_message(self, timeout):
+        try:
+            return rospy.wait_for_message(self.image_topic, Image, timeout=timeout)
+        except rospy.ROSException:
+            raise BridgeError(
+                BRIDGE_ACTION_ERROR,
+                "No image was received on {} within {:.1f}s".format(
+                    self.image_topic, timeout
+                ),
+            )
 
-    def _find_objects(self, cv_image, lower_hsv, upper_hsv):
-        hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+    def _decode_image(self, image_msg):
+        try:
+            return self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        except CvBridgeError as exc:
+            raise BridgeError(
+                BRIDGE_VISION_CONFIG_ERROR,
+                "Failed to decode image from {}: {}".format(self.image_topic, exc),
+            )
+
+    def _capture_image(self, timeout):
+        return self._decode_image(self._wait_for_image_message(timeout))
+
+    def _normalize_illumination(self, cv_image, tuning):
+        lab_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2LAB)
+        l_channel, a_channel, b_channel = cv2.split(lab_image)
+        clahe = cv2.createCLAHE(
+            clipLimit=tuning["clahe_clip_limit"],
+            tileGridSize=(
+                tuning["clahe_grid_size"],
+                tuning["clahe_grid_size"],
+            ),
+        )
+        l_channel = clahe.apply(l_channel)
+        normalized_lab = cv2.merge((l_channel, a_channel, b_channel))
+        return cv2.cvtColor(normalized_lab, cv2.COLOR_LAB2BGR)
+
+    def _build_detection_bounds(self, content, color_name):
+        color_name = self._normalize_color(color_name)
+        if color_name:
+            return {color_name: self._get_color_bounds(content, color_name)}
+
+        bounds = {}
+        for name in DEFAULT_DETECTION_COLORS:
+            bounds[name] = self._get_color_bounds(content, name)
+        return bounds
+
+    def _resolve_roi(self, image_shape, tuning):
+        image_h, image_w = image_shape[:2]
+        roi_cfg = tuning["roi"]
+        x_min = int(np.clip(roi_cfg["x_min"], 0, max(0, image_w - 1)))
+        x_max = int(np.clip(roi_cfg["x_max"], x_min + 1, image_w))
+        y_min = int(np.clip(roi_cfg["y_min"], 0, max(0, image_h - 1)))
+        y_max = int(np.clip(roi_cfg["y_max"], y_min + 1, image_h))
+        return {
+            "x_min": x_min,
+            "x_max": x_max,
+            "y_min": y_min,
+            "y_max": y_max,
+        }
+
+    def _point_in_roi(self, xc, yc, roi):
+        return (
+            roi["x_min"] <= xc <= roi["x_max"]
+            and roi["y_min"] <= yc <= roi["y_max"]
+        )
+
+    def _build_color_mask(self, hsv_image, lower_hsv, upper_hsv):
         if lower_hsv[0] > upper_hsv[0]:
             lower_a = np.array([0, lower_hsv[1], lower_hsv[2]], dtype=np.uint8)
             upper_a = np.array([upper_hsv[0], upper_hsv[1], upper_hsv[2]], dtype=np.uint8)
@@ -236,29 +415,243 @@ class OpenClawCommandBridge:
         else:
             mask = cv2.inRange(hsv_image, lower_hsv, upper_hsv)
 
-        mask = cv2.erode(mask, None, iterations=2)
-        mask = cv2.dilate(mask, None, iterations=2)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
         mask = cv2.GaussianBlur(mask, (5, 5), 0)
+        _, mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)
+        return mask
 
-        contours_info = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        contours = contours_info[0] if len(contours_info) == 2 else contours_info[1]
+    def _classify_contour(self, contour, color_name, min_area, tuning, roi):
+        area = float(cv2.contourArea(contour))
+        rect = cv2.minAreaRect(contour)
+        (xc, yc), (width, height), _ = rect
+        if width <= 0.0 or height <= 0.0:
+            return {
+                "valid": False,
+                "color": color_name,
+                "reject_reason": "degenerate",
+                "area": area,
+                "xc": float(xc),
+                "yc": float(yc),
+            }
 
-        objects = []
-        for contour in contours:
-            rect = cv2.minAreaRect(contour)
-            box = cv2.boxPoints(rect).astype(int)
-            x_mid = (box[0][0] + box[1][0] + box[2][0] + box[3][0]) / 4.0
-            y_mid = (box[0][1] + box[1][1] + box[2][1] + box[3][1]) / 4.0
-            width = np.linalg.norm(box[0] - box[1])
-            height = np.linalg.norm(box[0] - box[3])
-            size = float(width * height)
-            objects.append((size, float(x_mid), float(y_mid)))
-        return objects
+        aspect_ratio = float(width) / float(height)
+        box = cv2.boxPoints(rect).astype(np.int32)
 
-    def _wait_for_stable_detection(self, bounds_by_color, min_area):
+        reject_reason = None
+        if area < min_area:
+            reject_reason = "min_area"
+        elif area > tuning["max_pick_area"]:
+            reject_reason = "max_area"
+        elif (
+            aspect_ratio < tuning["aspect_ratio_min"]
+            or aspect_ratio > tuning["aspect_ratio_max"]
+        ):
+            reject_reason = "aspect"
+        elif not self._point_in_roi(xc, yc, roi):
+            reject_reason = "outside_roi"
+
+        return {
+            "valid": reject_reason is None,
+            "color": color_name,
+            "area": area,
+            "xc": float(xc),
+            "yc": float(yc),
+            "width": float(width),
+            "height": float(height),
+            "aspect_ratio": aspect_ratio,
+            "box": box,
+            "reject_reason": reject_reason,
+        }
+
+    def _analyze_frame(self, normalized_image, bounds_by_color, min_area, tuning):
+        hsv_image = cv2.cvtColor(normalized_image, cv2.COLOR_BGR2HSV)
+        roi = self._resolve_roi(normalized_image.shape, tuning)
+        effective_min_area = max(float(min_area), float(tuning["min_pick_area"]))
+
+        masks_by_color = {}
+        candidates_by_color = {}
+        rejected_by_color = {}
+        best_by_color = {}
+
+        for color_name, (lower_hsv, upper_hsv) in bounds_by_color.items():
+            mask = self._build_color_mask(hsv_image, lower_hsv, upper_hsv)
+            masks_by_color[color_name] = mask
+
+            contours_info = cv2.findContours(
+                mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+            )
+            contours = contours_info[0] if len(contours_info) == 2 else contours_info[1]
+
+            accepted = []
+            rejected = []
+            for contour in contours:
+                candidate = self._classify_contour(
+                    contour,
+                    color_name,
+                    effective_min_area,
+                    tuning,
+                    roi,
+                )
+                if candidate["valid"]:
+                    accepted.append(candidate)
+                else:
+                    rejected.append(candidate)
+
+            accepted.sort(key=lambda item: (-item["area"], item["yc"], item["xc"]))
+            candidates_by_color[color_name] = accepted
+            rejected_by_color[color_name] = rejected
+            if accepted:
+                best_by_color[color_name] = accepted[0]
+
+        overlay = self._render_debug_overlay(
+            normalized_image,
+            candidates_by_color,
+            rejected_by_color,
+            roi,
+        )
+        return {
+            "masks_by_color": masks_by_color,
+            "candidates_by_color": candidates_by_color,
+            "rejected_by_color": rejected_by_color,
+            "best_by_color": best_by_color,
+            "overlay": overlay,
+        }
+
+    def _render_debug_overlay(
+        self, normalized_image, candidates_by_color, rejected_by_color, roi
+    ):
+        overlay = normalized_image.copy()
+        cv2.rectangle(
+            overlay,
+            (roi["x_min"], roi["y_min"]),
+            (roi["x_max"], roi["y_max"]),
+            (0, 255, 255),
+            2,
+        )
+
+        for rejected in rejected_by_color.values():
+            for candidate in rejected:
+                if candidate.get("box") is None:
+                    continue
+                cv2.polylines(
+                    overlay,
+                    [candidate["box"]],
+                    isClosed=True,
+                    color=(128, 128, 128),
+                    thickness=1,
+                )
+
+        for color_name, accepted in candidates_by_color.items():
+            color_bgr = DEBUG_COLOR_MAP.get(color_name, (255, 255, 255))
+            for candidate in accepted:
+                cv2.polylines(
+                    overlay,
+                    [candidate["box"]],
+                    isClosed=True,
+                    color=color_bgr,
+                    thickness=2,
+                )
+                center = (int(round(candidate["xc"])), int(round(candidate["yc"])))
+                cv2.circle(overlay, center, 4, color_bgr, -1)
+                label = "{} {:.0f}".format(color_name, candidate["area"])
+                cv2.putText(
+                    overlay,
+                    label,
+                    (center[0] + 4, center[1] - 6),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.4,
+                    color_bgr,
+                    1,
+                    cv2.LINE_AA,
+                )
+        return overlay
+
+    def _publish_image(self, publisher, image, encoding):
+        if publisher is None:
+            return
+        try:
+            publisher.publish(self.bridge.cv2_to_imgmsg(image, encoding=encoding))
+        except CvBridgeError as exc:
+            rospy.logwarn_throttle(5.0, "Failed to publish debug image: %s", exc)
+
+    def _publish_debug_images(self, normalized_image, masks_by_color, overlay):
+        if not self.publish_debug_images:
+            return
+        self._publish_image(self.debug_normalized_pub, normalized_image, "bgr8")
+        self._publish_image(self.debug_overlay_pub, overlay, "bgr8")
+        for color_name, mask in masks_by_color.items():
+            self._publish_image(self.debug_mask_pubs.get(color_name), mask, "mono8")
+
+    def _merge_samples_into_clusters(self, clusters, samples, tolerance_px):
+        for sample in samples:
+            assigned = False
+            for cluster in clusters:
+                if cluster["color"] != sample["color"]:
+                    continue
+                distance = np.hypot(
+                    sample["xc"] - cluster["mean_x"],
+                    sample["yc"] - cluster["mean_y"],
+                )
+                if distance <= tolerance_px:
+                    cluster["samples"].append(sample)
+                    cluster["mean_x"] = float(
+                        np.mean([item["xc"] for item in cluster["samples"]])
+                    )
+                    cluster["mean_y"] = float(
+                        np.mean([item["yc"] for item in cluster["samples"]])
+                    )
+                    assigned = True
+                    break
+            if not assigned:
+                clusters.append(
+                    {
+                        "color": sample["color"],
+                        "samples": [sample],
+                        "mean_x": sample["xc"],
+                        "mean_y": sample["yc"],
+                    }
+                )
+        return clusters
+
+    def _cluster_to_detection(self, cluster):
+        samples = cluster["samples"]
+        return {
+            "color": cluster["color"],
+            "xc": float(np.median([item["xc"] for item in samples])),
+            "yc": float(np.median([item["yc"] for item in samples])),
+            "area": float(np.median([item["area"] for item in samples])),
+            "hits": len(samples),
+        }
+
+    def _stable_candidate_from_history(self, history, tolerance_px, min_hits):
+        samples = [item for item in history if item is not None]
+        if len(samples) < min_hits:
+            return None
+
+        clusters = self._merge_samples_into_clusters([], samples, tolerance_px)
+        if not clusters:
+            return None
+
+        best_cluster = max(
+            clusters,
+            key=lambda cluster: (
+                len(cluster["samples"]),
+                np.median([item["area"] for item in cluster["samples"]]),
+            ),
+        )
+        if len(best_cluster["samples"]) < min_hits:
+            return None
+        return self._cluster_to_detection(best_cluster)
+
+    def _wait_for_stable_detection(self, content, bounds_by_color, min_area):
+        tuning = self._load_detection_tuning(content)
         deadline = None if self.find_timeout <= 0 else time.time() + self.find_timeout
-        stable_counts = dict((color, 0) for color in bounds_by_color)
-        last_points = dict((color, None) for color in bounds_by_color)
+        history = {
+            color_name: deque(maxlen=tuning["vote_window"])
+            for color_name in bounds_by_color
+        }
 
         if deadline is None:
             rospy.loginfo(
@@ -278,34 +671,33 @@ class OpenClawCommandBridge:
             except rospy.ROSException:
                 continue
 
-            try:
-                cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-            except CvBridgeError as exc:
-                raise BridgeError(
-                    BRIDGE_VISION_CONFIG_ERROR,
-                    "Failed to decode image from {}: {}".format(self.image_topic, exc),
+            cv_image = self._decode_image(image_msg)
+            normalized_image = self._normalize_illumination(cv_image, tuning)
+            frame_data = self._analyze_frame(
+                normalized_image,
+                bounds_by_color,
+                min_area,
+                tuning,
+            )
+            self._publish_debug_images(
+                normalized_image,
+                frame_data["masks_by_color"],
+                frame_data["overlay"],
+            )
+
+            for color_name in bounds_by_color:
+                history[color_name].append(frame_data["best_by_color"].get(color_name))
+                stable_candidate = self._stable_candidate_from_history(
+                    history[color_name],
+                    tuning["vote_tolerance_px"],
+                    tuning["vote_min_hits"],
                 )
-
-            for color_name, (lower_hsv, upper_hsv) in bounds_by_color.items():
-                size, xc, yc = self._largest_object(cv_image, lower_hsv, upper_hsv)
-                if size < min_area:
-                    stable_counts[color_name] = 0
-                    last_points[color_name] = None
-                    continue
-
-                last_point = last_points[color_name]
-                if (
-                    last_point is not None
-                    and abs(xc - last_point[0]) <= self.stable_tolerance_px
-                    and abs(yc - last_point[1]) <= self.stable_tolerance_px
-                ):
-                    stable_counts[color_name] += 1
-                else:
-                    stable_counts[color_name] = 1
-                last_points[color_name] = (xc, yc)
-
-                if stable_counts[color_name] >= self.stable_samples:
-                    return color_name, xc, yc
+                if stable_candidate is not None:
+                    return (
+                        color_name,
+                        stable_candidate["xc"],
+                        stable_candidate["yc"],
+                    )
 
         raise BridgeError(
             BRIDGE_OBJECT_NOT_FOUND,
@@ -315,110 +707,86 @@ class OpenClawCommandBridge:
             ),
         )
 
-    def _wait_for_all_stable_detections(self, bounds_by_color, min_area):
+    def _collect_stable_clusters(self, content, bounds_by_color, min_area):
+        tuning = self._load_detection_tuning(content)
         deadline = None if self.find_timeout <= 0 else time.time() + self.find_timeout
-        stable_counts = dict((color, 0) for color in bounds_by_color)
-        last_points = dict((color, None) for color in bounds_by_color)
-        detections = {}
+        frame_count = 0
+        clusters = []
 
         if deadline is None:
             rospy.loginfo(
-                "Waiting for stable objects on %s without timeout",
+                "Collecting multi-frame detections on %s without timeout",
                 self.image_topic,
             )
         else:
             rospy.loginfo(
-                "Waiting for stable objects on %s (timeout %.1fs)",
+                "Collecting multi-frame detections on %s (timeout %.1fs)",
                 self.image_topic,
                 self.find_timeout,
             )
 
-        while not rospy.is_shutdown() and (deadline is None or time.time() < deadline):
+        while (
+            not rospy.is_shutdown()
+            and frame_count < tuning["multi_frame_count"]
+            and (deadline is None or time.time() < deadline)
+        ):
             try:
                 image_msg = rospy.wait_for_message(self.image_topic, Image, timeout=1.0)
             except rospy.ROSException:
                 continue
 
-            try:
-                cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-            except CvBridgeError as exc:
-                raise BridgeError(
-                    BRIDGE_VISION_CONFIG_ERROR,
-                    "Failed to decode image from {}: {}".format(self.image_topic, exc),
-                )
+            cv_image = self._decode_image(image_msg)
+            normalized_image = self._normalize_illumination(cv_image, tuning)
+            frame_data = self._analyze_frame(
+                normalized_image,
+                bounds_by_color,
+                min_area,
+                tuning,
+            )
+            self._publish_debug_images(
+                normalized_image,
+                frame_data["masks_by_color"],
+                frame_data["overlay"],
+            )
 
-            for color_name, (lower_hsv, upper_hsv) in bounds_by_color.items():
-                if color_name in detections:
-                    continue
+            frame_samples = []
+            for color_name in bounds_by_color:
+                for candidate in frame_data["candidates_by_color"].get(color_name, []):
+                    frame_samples.append(
+                        {
+                            "color": color_name,
+                            "xc": candidate["xc"],
+                            "yc": candidate["yc"],
+                            "area": candidate["area"],
+                        }
+                    )
+            self._merge_samples_into_clusters(
+                clusters,
+                frame_samples,
+                tuning["multi_merge_tolerance_px"],
+            )
+            frame_count += 1
 
-                size, xc, yc = self._largest_object(cv_image, lower_hsv, upper_hsv)
-                if size < min_area:
-                    stable_counts[color_name] = 0
-                    last_points[color_name] = None
-                    continue
-
-                last_point = last_points[color_name]
-                if (
-                    last_point is not None
-                    and abs(xc - last_point[0]) <= self.stable_tolerance_px
-                    and abs(yc - last_point[1]) <= self.stable_tolerance_px
-                ):
-                    stable_counts[color_name] += 1
-                else:
-                    stable_counts[color_name] = 1
-                last_points[color_name] = (xc, yc)
-
-                if stable_counts[color_name] >= self.stable_samples:
-                    detections[color_name] = (xc, yc)
-
-            if len(detections) == len(bounds_by_color):
-                break
-
-        if detections:
-            return detections
-
-        raise BridgeError(
-            BRIDGE_OBJECT_NOT_FOUND,
-            "No stable object was detected on {} within {:.1f}s".format(
-                self.image_topic,
-                self.find_timeout,
-            ),
-        )
+        detections = [
+            self._cluster_to_detection(cluster)
+            for cluster in clusters
+            if len(cluster["samples"]) >= tuning["multi_min_hits"]
+        ]
+        if not detections:
+            raise BridgeError(
+                BRIDGE_OBJECT_NOT_FOUND,
+                "No stable object was detected on {} within {:.1f}s".format(
+                    self.image_topic,
+                    self.find_timeout,
+                ),
+            )
+        return detections
 
     def _pixel_to_workspace(self, xc, yc, content):
         k1, b1, k2, b2 = self._require_calibration(content)
         target_x = k1 * yc + b1
         target_y = k2 * xc + b2
         return target_x, target_y
-
-    def _capture_image(self, timeout):
-        try:
-            image_msg = rospy.wait_for_message(self.image_topic, Image, timeout=timeout)
-        except rospy.ROSException:
-            raise BridgeError(
-                BRIDGE_ACTION_ERROR,
-                "No image was received on {} within {:.1f}s".format(
-                    self.image_topic, timeout
-                ),
-            )
-
-        try:
-            return self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-        except CvBridgeError as exc:
-            raise BridgeError(
-                BRIDGE_VISION_CONFIG_ERROR,
-                "Failed to decode image from {}: {}".format(self.image_topic, exc),
-            )
-
-    def _build_detection_bounds(self, content, color_name):
-        color_name = self._normalize_color(color_name)
-        if color_name:
-            return {color_name: self._get_color_bounds(content, color_name)}
-
-        bounds = {}
-        for name in DEFAULT_DETECTION_COLORS:
-            bounds[name] = self._get_color_bounds(content, name)
-        return bounds
 
     def _detect_target(self, color_name="", min_area=None, move_to_search=False):
         if move_to_search:
@@ -427,8 +795,9 @@ class OpenClawCommandBridge:
         content = self._load_vision_config()
         bounds = self._build_detection_bounds(content, color_name)
         detected_color, xc, yc = self._wait_for_stable_detection(
+            content,
             bounds,
-            self.min_pick_area if min_area is None else min_area,
+            0.0 if min_area is None else min_area,
         )
         target_x, target_y = self._pixel_to_workspace(xc, yc, content)
         return detected_color, xc, yc, target_x, target_y
@@ -439,18 +808,51 @@ class OpenClawCommandBridge:
 
         content = self._load_vision_config()
         bounds = self._build_detection_bounds(content, "")
-        detections = self._wait_for_all_stable_detections(
+        detections = self._collect_stable_clusters(
+            content,
             bounds,
-            self.min_pick_area if min_area is None else min_area,
+            0.0 if min_area is None else min_area,
         )
+
+        best_by_color = {}
+        for detection in detections:
+            color_name = detection["color"]
+            current = best_by_color.get(color_name)
+            if current is None or (
+                detection["hits"],
+                detection["area"],
+            ) > (
+                current["hits"],
+                current["area"],
+            ):
+                best_by_color[color_name] = detection
+
+        if not best_by_color:
+            raise BridgeError(
+                BRIDGE_OBJECT_NOT_FOUND,
+                "No stable object was detected on {}".format(self.image_topic),
+            )
 
         results = []
         for color_name in DEFAULT_DETECTION_COLORS:
-            if color_name not in detections:
+            detection = best_by_color.get(color_name)
+            if detection is None:
                 continue
-            xc, yc = detections[color_name]
-            target_x, target_y = self._pixel_to_workspace(xc, yc, content)
-            results.append((color_name, xc, yc, target_x, target_y))
+            target_x, target_y = self._pixel_to_workspace(
+                detection["xc"],
+                detection["yc"],
+                content,
+            )
+            results.append(
+                (
+                    color_name,
+                    detection["xc"],
+                    detection["yc"],
+                    target_x,
+                    target_y,
+                    detection["hits"],
+                )
+            )
         return results
 
     def _detect_all_objects(self, min_area=None, move_to_search=False):
@@ -459,18 +861,28 @@ class OpenClawCommandBridge:
 
         content = self._load_vision_config()
         bounds = self._build_detection_bounds(content, "")
-        cv_image = self._capture_image(self.status_timeout)
-        min_area = self.min_pick_area if min_area is None else min_area
+        detections = self._collect_stable_clusters(
+            content,
+            bounds,
+            0.0 if min_area is None else min_area,
+        )
 
         results = []
-        for color_name in DEFAULT_DETECTION_COLORS:
-            lower_hsv, upper_hsv = bounds[color_name]
-            objects = self._find_objects(cv_image, lower_hsv, upper_hsv)
-            for size, xc, yc in objects:
-                if size < min_area:
-                    continue
-                target_x, target_y = self._pixel_to_workspace(xc, yc, content)
-                results.append((color_name, xc, yc, target_x, target_y, size))
+        for detection in detections:
+            target_x, target_y = self._pixel_to_workspace(
+                detection["xc"], detection["yc"], content
+            )
+            results.append(
+                (
+                    detection["color"],
+                    detection["xc"],
+                    detection["yc"],
+                    target_x,
+                    target_y,
+                    detection["area"],
+                    detection["hits"],
+                )
+            )
 
         if not results:
             raise BridgeError(
@@ -590,7 +1002,17 @@ class OpenClawCommandBridge:
             result_code = self._run_action(fallback_goal, description + "/fallback")
         return result_code
 
-    def _run_put_action(self, x, y, z, roll=0.0, pitch=0.0, yaw=0.0, use_rpy=False, description="put"):
+    def _run_put_action(
+        self,
+        x,
+        y,
+        z,
+        roll=0.0,
+        pitch=0.0,
+        yaw=0.0,
+        use_rpy=False,
+        description="put",
+    ):
         action_type = (
             SGRCtrlGoal.ACTION_TYPE_PUT_XYZ_RPY
             if use_rpy
@@ -685,7 +1107,6 @@ class OpenClawCommandBridge:
         requested_color = self._normalize_color(req.color)
         detected_color, xc, yc, target_x, target_y = self._detect_target(
             requested_color,
-            min_area=self.min_pick_area,
             move_to_search=True,
         )
         message = "detect_color {} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f})".format(
@@ -706,21 +1127,21 @@ class OpenClawCommandBridge:
 
     def _handle_detect_all_colors(self):
         detections = self._detect_all_targets(
-            min_area=self.min_pick_area,
             move_to_search=True,
         )
         detected_colors = [item[0] for item in detections]
         target_xyzs = [(item[3], item[4], self.pick_z) for item in detections]
         details = ", ".join(
-            "{} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f})".format(
+            "{} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f}) hits={}".format(
                 color_name,
                 xc,
                 yc,
                 target_x,
                 target_y,
                 self.pick_z,
+                hits,
             )
-            for color_name, xc, yc, target_x, target_y in detections
+            for color_name, xc, yc, target_x, target_y, hits in detections
         )
         return self._response(
             True,
@@ -735,7 +1156,6 @@ class OpenClawCommandBridge:
 
     def _handle_detect_all_objects(self):
         detections = self._detect_all_objects(
-            min_area=self.min_pick_area,
             move_to_search=True,
         )
         detected_colors = [item[0] for item in detections]
@@ -747,15 +1167,16 @@ class OpenClawCommandBridge:
             if color_counts.get(color_name, 0) > 0
         )
         details = ", ".join(
-            "{} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f})".format(
+            "{} ({:.1f}, {:.1f}) -> ({:.4f}, {:.4f}, {:.4f}) hits={}".format(
                 color_name,
                 xc,
                 yc,
                 target_x,
                 target_y,
                 self.pick_z,
+                hits,
             )
-            for color_name, xc, yc, target_x, target_y, _ in detections
+            for color_name, xc, yc, target_x, target_y, _, hits in detections
         )
         return self._response(
             True,
@@ -779,7 +1200,6 @@ class OpenClawCommandBridge:
 
         detected_color, xc, yc, target_x, target_y = self._detect_target(
             requested_color,
-            min_area=self.min_pick_area,
             move_to_search=True,
         )
         result_code = self._run_pick_action(target_x, target_y, "pick_once")
@@ -802,7 +1222,6 @@ class OpenClawCommandBridge:
     def _handle_pick_any(self):
         detected_color, xc, yc, target_x, target_y = self._detect_target(
             "",
-            min_area=self.min_pick_area,
             move_to_search=True,
         )
         result_code = self._run_pick_action(target_x, target_y, "pick_any")
@@ -827,7 +1246,6 @@ class OpenClawCommandBridge:
         requested_color = self._normalize_color(req.color)
         detected_color, xc, yc, target_x, target_y = self._detect_target(
             requested_color,
-            min_area=self.min_pick_area,
             move_to_search=True,
         )
         pick_result = self._run_pick_action(target_x, target_y, "pick_and_place/pick")
@@ -1199,13 +1617,14 @@ class OpenClawCommandBridge:
 
         message = (
             "status action_server_ok={} camera_ok={} vision_config_ok={} "
-            "calibration_ok={} image_topic={}"
+            "calibration_ok={} image_topic={} debug_images={}"
         ).format(
             str(action_ready).lower(),
             str(camera_ready).lower(),
             str(vision_ready).lower(),
             str(calibration_ready).lower(),
             self.image_topic,
+            str(self.publish_debug_images).lower(),
         )
         return self._response(success, result_code, message)
 

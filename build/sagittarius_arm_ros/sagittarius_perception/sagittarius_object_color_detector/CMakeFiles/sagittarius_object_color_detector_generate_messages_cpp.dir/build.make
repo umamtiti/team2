@@ -64,24 +64,24 @@ sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector/CMa
 
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalStatus.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalStatus.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlAction.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ay/team2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from sagittarius_object_color_detector/SGRCtrlAction.msg"
 	cd /home/ay/team2/src/sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector && /home/ay/team2/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg -Isagittarius_object_color_detector:/home/ay/team2/devel/share/sagittarius_object_color_detector/msg -Isensor_msgs:/opt/ros/noetic/share/sensor_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Iactionlib_msgs:/opt/ros/noetic/share/actionlib_msgs/cmake/../msg -p sagittarius_object_color_detector -o /home/ay/team2/devel/include/sagittarius_object_color_detector -e /opt/ros/noetic/share/gencpp/cmake/..
 
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionGoal.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ay/team2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating C++ code from sagittarius_object_color_detector/SGRCtrlActionGoal.msg"
 	cd /home/ay/team2/src/sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector && /home/ay/team2/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg -Isagittarius_object_color_detector:/home/ay/team2/devel/share/sagittarius_object_color_detector/msg -Isensor_msgs:/opt/ros/noetic/share/sensor_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Iactionlib_msgs:/opt/ros/noetic/share/actionlib_msgs/cmake/../msg -p sagittarius_object_color_detector -o /home/ay/team2/devel/include/sagittarius_object_color_detector -e /opt/ros/noetic/share/gencpp/cmake/..
@@ -98,10 +98,10 @@ sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector/CMa
 
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /opt/ros/noetic/lib/gencpp/gen_cpp.py
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg
+/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalStatus.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
-/home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg
 /home/ay/team2/devel/include/sagittarius_object_color_detector/SGRCtrlActionFeedback.h: /opt/ros/noetic/share/gencpp/msg.h.template
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ay/team2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating C++ code from sagittarius_object_color_detector/SGRCtrlActionFeedback.msg"
 	cd /home/ay/team2/src/sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector && /home/ay/team2/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg -Isagittarius_object_color_detector:/home/ay/team2/devel/share/sagittarius_object_color_detector/msg -Isensor_msgs:/opt/ros/noetic/share/sensor_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Iactionlib_msgs:/opt/ros/noetic/share/actionlib_msgs/cmake/../msg -p sagittarius_object_color_detector -o /home/ay/team2/devel/include/sagittarius_object_color_detector -e /opt/ros/noetic/share/gencpp/cmake/..

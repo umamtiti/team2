@@ -3,31 +3,54 @@ LinearRegression:
   b2: 0.08160360590715192
   k1: -0.00025292681724675546
   k2: -0.0002870839257947297
-blue:
-  hmax: 267
-  hmin: 168
-  smax: 255
-  smin: 41
-  vmax: 255
-  vmin: 0
-customize:
-  hmax: 360
-  hmin: 0
-  smax: 255
-  smin: 0
-  vmax: 255
-  vmin: 0
-green:
-  hmax: 138
-  hmin: 69
-  smax: 255
-  smin: 90
-  vmax: 255
-  vmin: 0
+
+DetectionTuning:
+  roi:
+    x_min: 60
+    x_max: 590
+    y_min: 50
+    y_max: 455
+  min_pick_area: 1800
+  max_pick_area: 90000
+  aspect_ratio_min: 0.6
+  aspect_ratio_max: 1.7
+  vote_window: 8
+  vote_min_hits: 5
+  vote_tolerance_px: 8.0
+  multi_frame_count: 8
+  multi_min_hits: 4
+  multi_merge_tolerance_px: 12.0
+  clahe_clip_limit: 2.5
+  clahe_grid_size: 8
+
 red:
-  hmax: 21
-  hmin: 360
+  hmin: 345
+  hmax: 18
+  smin: 85
   smax: 255
-  smin: 32
+  vmin: 45
   vmax: 255
+
+green:
+  hmin: 75
+  hmax: 155
+  smin: 80
+  smax: 255
+  vmin: 45
+  vmax: 255
+
+blue:
+  hmin: 190
+  hmax: 255
+  smin: 80
+  smax: 255
+  vmin: 45
+  vmax: 255
+
+customize:
+  hmin: 0
+  hmax: 360
+  smin: 0
+  smax: 255
   vmin: 0
+  vmax: 255

@@ -15,6 +15,7 @@
   <arg name="vision_config" default="$(find sagittarius_object_color_detector)/config/vision_config.yaml"/>
   <arg name="service_name" default="openclaw/run_command"/>
   <arg name="find_timeout" default="60.0"/>
+  <arg name="publish_debug_images" default="false"/>
 
   <include file="$(find sagittarius_moveit)/launch/demo_true.launch">
     <arg name="robot_name" value="$(arg robot_name)"/>
@@ -49,5 +50,6 @@
     <param name="image_topic" value="$(arg image_topic)"/>
     <param name="vision_config" value="$(arg vision_config)"/>
     <param name="find_timeout" value="$(arg find_timeout)"/>
+    <param name="publish_debug_images" value="$(arg publish_debug_images)"/>
   </node>
 </launch>

@@ -64,23 +64,23 @@ sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector/CMa
 
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/lib/gennodejs/gen_nodejs.py
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalStatus.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/share/std_msgs/msg/Header.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlResult.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalStatus.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionResult.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlAction.js: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ay/team2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from sagittarius_object_color_detector/SGRCtrlAction.msg"
 	cd /home/ay/team2/build/sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector && ../../../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlAction.msg -Isagittarius_object_color_detector:/home/ay/team2/devel/share/sagittarius_object_color_detector/msg -Isensor_msgs:/opt/ros/noetic/share/sensor_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Iactionlib_msgs:/opt/ros/noetic/share/actionlib_msgs/cmake/../msg -p sagittarius_object_color_detector -o /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg
 
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /opt/ros/noetic/lib/gennodejs/gen_nodejs.py
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlGoal.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /opt/ros/noetic/share/std_msgs/msg/Header.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ay/team2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from sagittarius_object_color_detector/SGRCtrlActionGoal.msg"
 	cd /home/ay/team2/build/sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector && ../../../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionGoal.msg -Isagittarius_object_color_detector:/home/ay/team2/devel/share/sagittarius_object_color_detector/msg -Isensor_msgs:/opt/ros/noetic/share/sensor_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Iactionlib_msgs:/opt/ros/noetic/share/actionlib_msgs/cmake/../msg -p sagittarius_object_color_detector -o /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg
 
@@ -95,10 +95,10 @@ sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector/CMa
 
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /opt/ros/noetic/lib/gennodejs/gen_nodejs.py
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg
+/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalStatus.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /opt/ros/noetic/share/std_msgs/msg/Header.msg
 /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /opt/ros/noetic/share/actionlib_msgs/msg/GoalID.msg
-/home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.js: /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlFeedback.msg
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ay/team2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating Javascript code from sagittarius_object_color_detector/SGRCtrlActionFeedback.msg"
 	cd /home/ay/team2/build/sagittarius_arm_ros/sagittarius_perception/sagittarius_object_color_detector && ../../../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/ay/team2/devel/share/sagittarius_object_color_detector/msg/SGRCtrlActionFeedback.msg -Isagittarius_object_color_detector:/home/ay/team2/devel/share/sagittarius_object_color_detector/msg -Isensor_msgs:/opt/ros/noetic/share/sensor_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Iactionlib_msgs:/opt/ros/noetic/share/actionlib_msgs/cmake/../msg -p sagittarius_object_color_detector -o /home/ay/team2/devel/share/gennodejs/ros/sagittarius_object_color_detector/msg
 

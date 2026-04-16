@@ -48,6 +48,27 @@ roslaunch sagittarius_openclaw_bridge openclaw_backend.launch find_timeout:=0
 `find_timeout:=60` waits up to 60 seconds for detection.  
 `find_timeout:=0` keeps waiting until an object appears.
 
+Enable debug image topics for perception tuning:
+
+```bash
+roslaunch sagittarius_openclaw_bridge openclaw_backend.launch \
+  serialname:=/dev/ttyACM0 \
+  video_dev:=/dev/video0 \
+  pixel_format:=mjpeg \
+  image_width:=640 \
+  image_height:=480 \
+  framerate:=25 \
+  publish_debug_images:=true
+```
+
+When `publish_debug_images:=true`, the bridge publishes:
+
+- `/command_bridge/debug/normalized`
+- `/command_bridge/debug/overlay`
+- `/command_bridge/debug/mask_red`
+- `/command_bridge/debug/mask_green`
+- `/command_bridge/debug/mask_blue`
+
 ## Common Commands
 
 All commands below assume:
